@@ -35,11 +35,22 @@ namespace Mercurial
             {
                 return _Path;
             }
-
             set
             {
                 _Path = (value ?? string.Empty).Trim();
             }
+        }
+        
+        /// <summary>
+        /// Gets or sets the <see cref="Revision"/> to identify.
+        /// Default is <c>null</c>.
+        /// </summary>
+        [NullableArgument(NonNullOption = "--rev")]
+        [DefaultValue(null)]
+        public RevSpec Revision
+        {
+            get;
+            set;
         }
 
         #region IMercurialCommand<RevSpec> Members
@@ -75,6 +86,23 @@ namespace Mercurial
             return this;
         }
 
+        /// <summary>
+        /// Sets the <see cref="Revision"/> property to the specified value and
+        /// returns this <see cref="IdentifyCommand"/> instance.
+        /// </summary>
+        /// <param name="revision">Specified revision to identify.</param>
+        /// <returns>
+        /// This <see cref="IdentifyCommand"/> instance.
+        /// </returns>
+        /// <remarks>
+        /// This method is part of the fluent interface.
+        /// </remarks>
+        public IdentifyCommand WithRevision(RevSpec revision)
+        {
+            Revision = revision;
+            return this;
+        }
+        
         /// <summary>
         /// This method should parse and store the appropriate execution result output
         /// according to the type of data the command line client would return for

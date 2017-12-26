@@ -66,5 +66,19 @@ namespace Mercurial.Tests
 
             StringAssert.StartsWith(hashViaIdentify.ToString(), hashViaLog.ToString());
         }
+
+        [Test]
+        [Category("Integration")]
+        public void Identify_WithRevision_ReturnsRevSpec()
+        {
+            Repo.Init();
+            WriteTextFileAndCommit(Repo, "test.txt", "dummy", "dummy", true);
+
+            var tip = Repo.Tip();
+            var revisionViaIdentify = Repo.Identify(
+                new IdentifyCommand().WithRevision(tip.Hash));
+
+            StringAssert.StartsWith(revisionViaIdentify.ToString(), tip.Hash);
+        }
     }
 }
