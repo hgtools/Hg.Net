@@ -275,6 +275,11 @@
   <ItemGroup>
     <None Include="Mercurial.Net.nuspec" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="$(SolutionDir)\SolutionInfo.cs" Condition="Exists('$(SolutionDir)\SolutionInfo.cs')">
+      <Link>Properties\SolutionInfo.cs</Link>
+    </Compile>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>
