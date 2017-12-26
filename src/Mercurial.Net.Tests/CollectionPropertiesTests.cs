@@ -9,6 +9,7 @@ using NUnit.Framework;
 namespace Mercurial.Tests
 {
     [TestFixture]
+    [Parallelizable(ParallelScope.All)]
     public class CollectionPropertiesTests
     {
         public static IEnumerable<object[]> AllCollectionProperties()

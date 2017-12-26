@@ -8,6 +8,7 @@ namespace Mercurial.Tests
 {
     [TestFixture]
     [Category("Internal")]
+    [Parallelizable(ParallelScope.All)]
     public class TestTests
     {
         public static IEnumerable<object[]> Test_HasCategory_TestCases()

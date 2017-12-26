@@ -8,6 +8,7 @@ using NUnit.Framework;
 
 namespace Mercurial.Tests
 {
+    [Parallelizable(ParallelScope.Self)]
     public class RepositoryTestsBase
     {
         private readonly List<string> _Repositories = new List<string>();

@@ -7,6 +7,7 @@ using NUnit.Framework;
 namespace Mercurial.Tests
 {
     [TestFixture]
+    [Parallelizable(ParallelScope.All)]
     public class CommandClassesTests
     {
         public static IEnumerable<Type> CommandClassTypes()

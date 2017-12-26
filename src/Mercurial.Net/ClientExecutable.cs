@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using Mercurial.Configuration;
 using Mercurial.Versions;
 
@@ -15,11 +16,19 @@ namespace Mercurial
     /// </summary>
     public static class ClientExecutable
     {
+        private static object _SyncRoot = new object();
+        
         /// <summary>
         /// If <c>true</c>, then the <see cref="LazyInitialize"/> method has executed, possibly unable
         /// to locate the client.
         /// </summary>
         private static bool _LazyInitializationExecuted;
+        
+        /// <summary>
+        /// If <c>true</c>, then the <see cref="LazyInitialize"/> method has started, possibly unable
+        /// to locate the client.
+        /// </summary>
+        private static bool _LazyInitializationStarted;
 
         /// <summary>
         /// This is the backing field for the <see cref="ClientPath"/> property.
@@ -96,11 +105,20 @@ namespace Mercurial
         /// </summary>
         internal static void LazyInitialize()
         {
-            if (!_LazyInitializationExecuted)
+            if (_LazyInitializationExecuted) 
+                return;
+            
+            lock (_SyncRoot)
             {
-                _LazyInitializationExecuted = true;
+                if (Volatile.Read(ref _LazyInitializationStarted) || Volatile.Read(ref _LazyInitializationExecuted))
+                    return;
+                
+                Volatile.Write(ref _LazyInitializationStarted, true);
+                
                 ClientPath = LocateClient();
                 Initialize();
+                
+                Volatile.Write(ref _LazyInitializationExecuted, true);
             }
         }
 
@@ -149,18 +167,18 @@ namespace Mercurial
         /// </summary>
         private static void Initialize()
         {
-            if (!StringEx.IsNullOrWhiteSpace(ClientPath))
+            if (!StringEx.IsNullOrWhiteSpace(_ClientPath))
             {
                 _Configuration = new ClientConfigurationCollection();
-                CurrentVersion = GetVersion();
-                MercurialVersionBase.AssignCurrent(CurrentVersion);
+                _CurrentVersion = DoGetVersion();
+                MercurialVersionBase.AssignCurrent(_CurrentVersion);
 
                 _Configuration.Refresh();
             }
             else
             {
                 _Configuration = null;
-                CurrentVersion = null;
+                _CurrentVersion = null;
             }
         }
 
@@ -207,6 +225,11 @@ namespace Mercurial
         public static Version GetVersion()
         {
             LazyInitialize();
+            return DoGetVersion();
+        }
+
+        private static Version DoGetVersion()
+        {
             var command = new VersionCommand();
             NonPersistentClient.Execute(command);
             string firstLine = command.Result.Split(
@@ -218,7 +241,8 @@ namespace Mercurial
             Match ma = re.Match(firstLine);
             if (!ma.Success)
                 throw new InvalidOperationException(
-                    string.Format(CultureInfo.InvariantCulture, "Unable to locate Mercurial version number in '{0}'", firstLine));
+                    string.Format(CultureInfo.InvariantCulture, "Unable to locate Mercurial version number in '{0}'",
+                        firstLine));
 
             string versionString = ma.Groups["version"].Value;
             switch (versionString.Split('.').Length)
@@ -237,7 +261,8 @@ namespace Mercurial
 
                 default:
                     throw new InvalidOperationException(
-                        string.Format(CultureInfo.InvariantCulture, "Incorrect version number length, too many or too few parts: {0}", versionString));
+                        string.Format(CultureInfo.InvariantCulture,
+                            "Incorrect version number length, too many or too few parts: {0}", versionString));
             }
         }
 

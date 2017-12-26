@@ -4,6 +4,7 @@ using NUnit.Framework;
 namespace Mercurial.Tests
 {
     [TestFixture]
+    [Parallelizable(ParallelScope.All)]
     public class RevisionsTests
     {
         [TestCase(0, "0")]

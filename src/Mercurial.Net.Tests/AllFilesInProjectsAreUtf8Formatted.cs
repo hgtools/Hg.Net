@@ -10,6 +10,7 @@ namespace Mercurial.Tests
 {
     [TestFixture]
     [Category("API")]
+    [Parallelizable(ParallelScope.All)]
     public class AllFilesInProjectsAreUtf8Encoded
     {
         public static IEnumerable<string> AllFilesInProjectsInFolder(string sourceLocation)

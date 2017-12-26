@@ -7,6 +7,7 @@ namespace Mercurial.Tests.Hooks
 {
     [TestFixture]
     [Category("API")]
+    [Parallelizable(ParallelScope.All)]
     public class MercurialCommandHookDictionaryTests
     {
         [Test]

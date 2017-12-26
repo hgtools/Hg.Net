@@ -5,6 +5,7 @@ using NUnit.Framework;
 namespace Mercurial.Tests
 {
     [TestFixture]
+    [Parallelizable(ParallelScope.All)]
     public class ClientTests
     {
         [TestCase((string)null)]

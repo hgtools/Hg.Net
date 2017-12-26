@@ -8,6 +8,7 @@ using NUnit.Framework;
 namespace Mercurial.Tests
 {
     [TestFixture]
+    [Parallelizable(ParallelScope.All)]
     public class FluentInterfaceTests
     {
         public static IEnumerable<object[]> AllFluentInterfaceMethodsWithMatchingProperties()

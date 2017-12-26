@@ -9,6 +9,7 @@ namespace Mercurial.Tests.Hooks
 {
     [TestFixture]
     [Category("API")]
+    [Parallelizable(ParallelScope.All)]
     public class PreHookBaseClassTests
     {
         public static IEnumerable<Type> HookClasses()
