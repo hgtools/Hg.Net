@@ -78,7 +78,6 @@ namespace Mercurial.Tests
         }
 
         [Test]
-        [Ignore("Ignore while not working")]
         [TestCaseSource(nameof(AllSourceFilesInProjects))]
         public void EnsureAllFilesInProjectsAreUtf8Encoded(string filename)
         {
