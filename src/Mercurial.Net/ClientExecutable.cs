@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using Mercurial.Configuration;
 using Mercurial.Versions;
+using System.Text;
 
 namespace Mercurial
 {
@@ -309,6 +310,42 @@ namespace Mercurial
                 throw new ArgumentNullException("command");
 
             NonPersistentClient.Execute(command);
+        }
+
+        /// <summary>
+        /// Retrieves encoding for Process streams from Mercurial config with default fallback value.
+        /// </summary>
+        /// <returns></returns>
+        public static Encoding GetListfileEncoding()
+        {
+            var encName = Configuration.GetValue("net", "listfile_encoding");
+            try
+            {
+                return Encoding.GetEncoding(encName);
+            }
+            catch
+            {
+                return Encoding.GetEncoding("Windows-1252");
+            }
+                
+        }
+
+        /// <summary>
+        /// Retrieves encoding for terminal to use in --encoding param of hg commands with default fallback value.
+        /// </summary>
+        /// <returns></returns>
+        public static Encoding GetTerminalEncoding()
+        {
+            var encName = Configuration.GetValue("net", "terminal_encoding");
+            try
+            {
+                return Encoding.GetEncoding(encName);
+            }
+            catch
+            {
+                return Encoding.GetEncoding("cp866");
+            }
+
         }
 
         /// <summary>

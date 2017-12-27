@@ -99,7 +99,7 @@ namespace Mercurial
                 command.Command,
                  "--noninteractive",
                  "--encoding",
-                 "cp1252",
+                 "cp1251",
             };
             arguments = arguments.Concat(command.Arguments.Where(a => !StringEx.IsNullOrWhiteSpace(a)));
             arguments = arguments.Concat(command.AdditionalArguments.Where(a => !StringEx.IsNullOrWhiteSpace(a)));
@@ -123,7 +123,7 @@ namespace Mercurial
                 command.Observer.Executing(command.Command, commandArguments);
             }
             
-            byte[] buffer = Encoding.GetEncoding("iso-8859-1").GetBytes(commandBuffer.ToString());
+            byte[] buffer = ClientExecutable.GetListfileEncoding().GetBytes(commandBuffer.ToString());
             foreach (byte b in buffer)
             {
                 _Process.StandardInput.BaseStream.WriteByte(b);
@@ -219,13 +219,15 @@ namespace Mercurial
                 WindowStyle = ProcessWindowStyle.Hidden,
                 UseShellExecute = false,
                 ErrorDialog = false,
-                Arguments = "serve --cmdserver pipe --noninteractive --encoding cp1252",
+                Arguments = "serve --cmdserver pipe --noninteractive" //--encoding cp1251",
             };
-            psi.EnvironmentVariables.Add("LANGUAGE", "EN");
-            psi.EnvironmentVariables.Add("HGENCODING", "cp1252");
+            //psi.EnvironmentVariables.Add("LANGUAGE", "EN");
+            //psi.EnvironmentVariables.Add("HGENCODING", "cp1251");
 
-            psi.StandardOutputEncoding = Encoding.GetEncoding("iso-8859-1");
-            psi.StandardErrorEncoding = Encoding.GetEncoding("iso-8859-1");
+
+
+            psi.StandardOutputEncoding =    ClientExecutable.GetListfileEncoding();
+            psi.StandardErrorEncoding =     ClientExecutable.GetListfileEncoding();
 
             _Process = Process.Start(psi);
             DecodeInitialBlock();

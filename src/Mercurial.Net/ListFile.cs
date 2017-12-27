@@ -19,11 +19,6 @@ namespace Mercurial
     public sealed class ListFile
     {
         /// <summary>
-        /// This field is used by the <see cref="GetArguments"/> method.
-        /// </summary>
-        private static readonly Encoding _ListFileEncoding = Encoding.GetEncoding("Windows-1252");
-
-        /// <summary>
         /// This is the backing field for the <see cref="Collection"/> property.
         /// </summary>
         private readonly Collection<string> _Collection = new Collection<string>(new List<string>());
@@ -66,7 +61,9 @@ namespace Mercurial
 
             _ListFileName = Path.GetTempFileName();
 
-            File.WriteAllText(_ListFileName, string.Join(Environment.NewLine, arguments), _ListFileEncoding);
+            var listFileEncoding = ClientExecutable.GetListfileEncoding();
+
+            File.WriteAllText(_ListFileName, string.Join(Environment.NewLine, arguments), listFileEncoding);
 
             return new[] { string.Format(CultureInfo.InvariantCulture, "\"listfile:{0}\"", _ListFileName) };
         }

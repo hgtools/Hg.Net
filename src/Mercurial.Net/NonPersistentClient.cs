@@ -93,11 +93,12 @@ namespace Mercurial
             ClientExecutable.LazyInitialize();
             var specialArguments = (IEnumerable<string>)new[]
             {
-                "--noninteractive", "--encoding", "cp1252",
+                "--noninteractive", "--encoding", ClientExecutable.GetTerminalEncoding().WebName,
             };
-            var environmentVariables = new[]
+            var environmentVariables = new KeyValuePair<string, string>[]
             {
-                new KeyValuePair<string, string>("LANGUAGE", "EN"), new KeyValuePair<string, string>("HGENCODING", "cp1252"),
+                new KeyValuePair<string, string>("LANGUAGE", "EN"),
+                new KeyValuePair<string, string>("HGENCODING", ClientExecutable.GetTerminalEncoding().WebName),
             };
 
             CommandProcessor.Execute(repositoryPath, ClientExecutable.ClientPath, command, environmentVariables, specialArguments);
