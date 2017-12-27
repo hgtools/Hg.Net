@@ -146,7 +146,7 @@ namespace Mercurial
                 return base.Arguments.Concat(
                     new[]
                     {
-                        "--logfile", string.Format(CultureInfo.InvariantCulture, "\"{0}\"", _MessageFilePath),
+                        "--message", Message,
                     }).Concat(_Paths.GetArguments());
             }
         }

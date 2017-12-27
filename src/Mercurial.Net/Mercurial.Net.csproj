@@ -21,7 +21,7 @@
     <DefineConstants>TRACE;DEBUG;CODE_ANALYSIS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <DocumentationFile>bin\Debug\Mercurial.Net.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -71,7 +71,11 @@
     <Compile Include="CloneCommand.cs" />
     <Compile Include="CollectionExtensions.cs" />
     <Compile Include="CommandBase.cs" />
+    <Compile Include="CommandChannel.cs" />
+    <Compile Include="CommandException.cs" />
+    <Compile Include="CommandMessage.cs" />
     <Compile Include="CommandProcessor.cs" />
+    <Compile Include="CommandResult.cs" />
     <Compile Include="CommandServerOutputDecoder.cs" />
     <Compile Include="CommitCommand.cs" />
     <Compile Include="Attributes\DateTimeArgumentAttribute.cs" />

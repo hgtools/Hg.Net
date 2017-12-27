@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Runtime.Remoting;
 using System.Text;
 
 namespace Mercurial
@@ -16,6 +18,7 @@ namespace Mercurial
     /// </summary>
     public sealed class PersistentClient : IClient, IDisposable
     {
+        static readonly int MercurialHeaderLength = 5;
         /// <summary>
         /// This is the backing field for the <see cref="RepositoryPath"/> property.
         /// </summary>
@@ -122,7 +125,7 @@ namespace Mercurial
                 commandArguments = string.Join(" ", commandParts.Skip(1).ToArray());
                 command.Observer.Executing(command.Command, commandArguments);
             }
-
+            /*
             var str = commandBuffer.ToString();
             byte[] buffer = ClientExecutable.GetListfileEncoding().GetBytes(str);
             foreach (byte b in buffer)
@@ -131,35 +134,238 @@ namespace Mercurial
                 _Process.StandardInput.BaseStream.Flush();
             }
 
-            string standardOutput;
-            string standardError;
-            int exitCode;
+            //string standardOutput;
+            //string standardError;
+            //int exitCode;*/
 
-            if (CommandServerOutputDecoder.GetOutput(_Process.StandardOutput, out standardOutput, out standardError, out exitCode))
+            MemoryStream output = new MemoryStream();
+            MemoryStream error = new MemoryStream();
+            var outputs = new Dictionary<CommandChannel, Stream>() {
+                { CommandChannel.Output, output },
+                { CommandChannel.Error, error },
+            };
+
+            var _codec = ClientExecutable.GetListfileEncoding();
+
+            int result = RunCommand(commandParts, outputs, null);
+            var r = new CommandResult(_codec.GetString(output.GetBuffer(), 0, (int)output.Length),
+                                      _codec.GetString(error.GetBuffer(), 0, (int)error.Length),
+                                      result);
+            
+            if (result == 0)
             {
                 if (command.Observer != null)
                 {
-                    using (var lineReader = new StringReader(standardOutput))
-                    {
-                        string line;
-                        while ((line = lineReader.ReadLine()) != null)
-                            command.Observer.Output(line);
-                    }
-                    using (var lineReader = new StringReader(standardError))
-                    {
-                        string line;
-                        while ((line = lineReader.ReadLine()) != null)
-                            command.Observer.ErrorOutput(line);
-                    }
-                    command.Observer.Executed(command.Command, commandArguments, exitCode, standardOutput, standardError);
+                    command.Observer.Output(r.Output);
+                    command.Observer.ErrorOutput(r.Error);
+                    command.Observer.Executed(command.Command, commandArguments, result, r.Output, r.Error);
                 }
-                command.After(exitCode, standardOutput, standardError);
+                command.After(result, r.Output, r.Error);
                 return;
             }
 
             StopPersistentMercurialClient();
             throw new MercurialExecutionException("Unable to decode output from executing command, spinning down persistent client");
         }
+
+        internal static int ReadInt(byte[] buffer, int offset)
+        {
+            if (null == buffer) throw new ArgumentNullException("buffer");
+            if (buffer.Length < offset + 4) throw new ArgumentOutOfRangeException("offset");
+
+            return IPAddress.NetworkToHostOrder(BitConverter.ToInt32(buffer, offset));
+        }
+
+        private int RunCommand(IList<string> command,
+                               IDictionary<CommandChannel, Stream> outputs,
+                               IDictionary<CommandChannel, Func<uint, byte[]>> inputs)
+        {
+            if (null == command || 0 == command.Count)
+                throw new ArgumentException("Command must not be empty", "command");
+
+            var _codec = ClientExecutable.GetListfileEncoding();
+
+            byte[] commandBuffer = _codec.GetBytes("runcommand\n");
+            byte[] argumentBuffer;
+
+            argumentBuffer = command.Aggregate(new List<byte>(), (bytes, arg) => {
+                bytes.AddRange(_codec.GetBytes(arg));
+                bytes.Add(0);
+                return bytes;
+            },
+            bytes => {
+                bytes.RemoveAt(bytes.Count - 1);
+                return bytes.ToArray();
+            }
+            ).ToArray();
+
+            byte[] lengthBuffer = BitConverter.GetBytes(IPAddress.HostToNetworkOrder(argumentBuffer.Length));
+
+            lock (_Process)
+            {
+                _Process.StandardInput.BaseStream.Write(commandBuffer, 0, commandBuffer.Length);
+                _Process.StandardInput.BaseStream.Write(lengthBuffer, 0, lengthBuffer.Length);
+                _Process.StandardInput.BaseStream.Write(argumentBuffer, 0, argumentBuffer.Length);
+                _Process.StandardInput.BaseStream.Flush();
+
+                try
+                {
+                    while (true)
+                    {
+                        CommandMessage message = ReadMessage();
+                        if (CommandChannel.Result == message.Channel)
+                            return ReadInt(message.Buffer, 0);
+
+                        if (inputs != null && inputs.ContainsKey(message.Channel))
+                        {
+                            byte[] sendBuffer = inputs[message.Channel](ReadUint(message.Buffer, 0));
+                            if (null == sendBuffer || 0 == sendBuffer.LongLength)
+                            {
+                            }
+                            else
+                            {
+                            }
+                        }
+                        if (outputs != null && outputs.ContainsKey(message.Channel))
+                        {
+                            if (message.Buffer.Length > int.MaxValue)
+                            {
+                                // .NET hates uints
+                                int firstPart = message.Buffer.Length / 2;
+                                int secondPart = message.Buffer.Length - firstPart;
+                                outputs[message.Channel].Write(message.Buffer, 0, firstPart);
+                                outputs[message.Channel].Write(message.Buffer, firstPart, secondPart);
+                            }
+                            else
+                            {
+                                outputs[message.Channel].Write(message.Buffer, 0, message.Buffer.Length);
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    //					Console.WriteLine (_Process.StandardOutput.ReadToEnd ());
+                    //					Console.WriteLine (_Process.StandardError.ReadToEnd ());
+                    Console.WriteLine(string.Join(" ", command.ToArray()));
+                    Console.WriteLine(ex);
+                    _Process.StandardOutput.BaseStream.Flush();
+                    _Process.StandardError.BaseStream.Flush();
+                    throw;
+                }
+            }// lock _Process
+        }
+
+        internal static uint ReadUint(byte[] buffer, int offset)
+        {
+            if (null == buffer)
+                throw new ArgumentNullException("buffer");
+            if (buffer.Length < offset + 4)
+                throw new ArgumentOutOfRangeException("offset");
+
+            return (uint)IPAddress.NetworkToHostOrder(BitConverter.ToInt32(buffer, offset));
+        }
+
+        CommandMessage ReadMessage()
+        {
+            byte[] header = new byte[MercurialHeaderLength];
+            long bytesRead = 0;
+
+            try
+            {
+                bytesRead = ReadAll(_Process.StandardOutput.BaseStream, header, 0, MercurialHeaderLength);
+            }
+            catch (Exception ex)
+            {
+                throw new ServerException("Error reading from command server", ex);
+            }
+
+            if (MercurialHeaderLength != bytesRead)
+            {
+                throw new ServerException(string.Format("Received malformed header from command server: {0} bytes", bytesRead));
+            }
+
+            CommandChannel channel = CommandChannelFromFirstByte(header);
+            long messageLength = (long)ReadUint(header, 1);
+
+            if (CommandChannel.Input == channel || CommandChannel.Line == channel)
+                return new CommandMessage(channel, messageLength.ToString());
+
+            byte[] messageBuffer = new byte[messageLength];
+
+            try
+            {
+                if (messageLength > int.MaxValue)
+                {
+                    // .NET hates uints
+                    int firstPart = (int)(messageLength / 2);
+                    int secondPart = (int)(messageLength - firstPart);
+
+                    bytesRead = ReadAll(_Process.StandardOutput.BaseStream, messageBuffer, 0, firstPart);
+                    if (bytesRead == firstPart)
+                    {
+                        bytesRead += ReadAll(_Process.StandardOutput.BaseStream, messageBuffer, firstPart, secondPart);
+                    }
+                }
+                else
+                {
+                    bytesRead = ReadAll(_Process.StandardOutput.BaseStream, messageBuffer, 0, (int)messageLength);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new ServerException("Error reading from command server", ex);
+            }
+
+            if (bytesRead != messageLength)
+            {
+                throw new ServerException(string.Format("Error reading from command server: Expected {0} bytes, read {1}", messageLength, bytesRead));
+            }
+
+            CommandMessage message = new CommandMessage(CommandChannelFromFirstByte(header), messageBuffer);
+            // Console.WriteLine ("READ: {0} {1}", message, message.Message);
+            return message;
+        }
+
+        internal static CommandChannel CommandChannelFromFirstByte(byte[] header)
+        {
+            char[] identifier = ASCIIEncoding.ASCII.GetChars(header, 0, 1);
+
+            switch (identifier[0])
+            {
+                case 'I':
+                    return CommandChannel.Input;
+                case 'L':
+                    return CommandChannel.Line;
+                case 'o':
+                    return CommandChannel.Output;
+                case 'e':
+                    return CommandChannel.Error;
+                case 'r':
+                    return CommandChannel.Result;
+                case 'd':
+                    return CommandChannel.Debug;
+                default:
+                    throw new ArgumentException(string.Format("Invalid channel identifier: {0}", identifier[0]), "header");
+            }
+        }
+
+        static int ReadAll(Stream stream, byte[] buffer, int offset, int length)
+        {
+            if (null == stream)
+                throw new ArgumentNullException("stream");
+
+            int remaining = length;
+            int read = 0;
+
+            for (; remaining > 0; offset += read, remaining -= read)
+            {
+                read = stream.Read(buffer, offset, remaining);
+            }
+
+            return length - remaining;
+        }
+
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
