@@ -98,8 +98,8 @@ namespace Mercurial
             {
                 command.Command,
                  "--noninteractive",
-                 "--encoding",
-                 "cp1251",
+                 //"--encoding",
+                 //"cp1251",
             };
             arguments = arguments.Concat(command.Arguments.Where(a => !StringEx.IsNullOrWhiteSpace(a)));
             arguments = arguments.Concat(command.AdditionalArguments.Where(a => !StringEx.IsNullOrWhiteSpace(a)));
@@ -122,8 +122,9 @@ namespace Mercurial
                 commandArguments = string.Join(" ", commandParts.Skip(1).ToArray());
                 command.Observer.Executing(command.Command, commandArguments);
             }
-            
-            byte[] buffer = ClientExecutable.GetListfileEncoding().GetBytes(commandBuffer.ToString());
+
+            var str = commandBuffer.ToString();
+            byte[] buffer = ClientExecutable.GetListfileEncoding().GetBytes(str);
             foreach (byte b in buffer)
             {
                 _Process.StandardInput.BaseStream.WriteByte(b);
@@ -221,20 +222,15 @@ namespace Mercurial
                 ErrorDialog = false,
                 Arguments = "serve --cmdserver pipe --noninteractive" //--encoding cp1251",
             };
-            //psi.EnvironmentVariables.Add("LANGUAGE", "EN");
-            try
-            {
-                psi.EnvironmentVariables.Add("HGENCODING", "cp1251");
-            }
-            catch
-            {
-
-            }
+            psi.EnvironmentVariables.Add("LANGUAGE", "EN");
+            psi.EnvironmentVariables.Remove("HGENCODING");
+            psi.EnvironmentVariables.Add("HGENCODING", ClientExecutable.GetListfileEncoding().WebName);
 
             Console.InputEncoding = ClientExecutable.GetListfileEncoding();
+            Console.OutputEncoding = ClientExecutable.GetListfileEncoding();
 
-            psi.StandardOutputEncoding =    ClientExecutable.GetListfileEncoding();
-            psi.StandardErrorEncoding =     ClientExecutable.GetListfileEncoding();
+            psi.StandardOutputEncoding = ClientExecutable.GetListfileEncoding();
+            psi.StandardErrorEncoding = ClientExecutable.GetListfileEncoding();
 
             _Process = Process.Start(psi);
             DecodeInitialBlock();
