@@ -222,9 +222,16 @@ namespace Mercurial
                 Arguments = "serve --cmdserver pipe --noninteractive" //--encoding cp1251",
             };
             //psi.EnvironmentVariables.Add("LANGUAGE", "EN");
-            //psi.EnvironmentVariables.Add("HGENCODING", "cp1251");
+            try
+            {
+                psi.EnvironmentVariables.Add("HGENCODING", "cp1251");
+            }
+            catch
+            {
 
+            }
 
+            Console.InputEncoding = ClientExecutable.GetListfileEncoding();
 
             psi.StandardOutputEncoding =    ClientExecutable.GetListfileEncoding();
             psi.StandardErrorEncoding =     ClientExecutable.GetListfileEncoding();
