@@ -31,7 +31,6 @@ namespace Mercurial.Tests
             var branchName = "Одинокая ветка сирени";
             Repo.Branch(branchName);
             WriteTextFileAndCommit(Repo, "testыыыы.txt", "dummy", commitMessage, true);
-            string commitLog = Repo.Log().First().CommitMessage;
             string branchLog = Repo.Log().First().Branch;
 
             Assert.That(branchLog, Is.EqualTo(branchName));

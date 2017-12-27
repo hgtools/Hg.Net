@@ -165,7 +165,10 @@ namespace Mercurial
             }
 
             StopPersistentMercurialClient();
-            throw new MercurialExecutionException("Unable to decode output from executing command, spinning down persistent client");
+            throw new MercurialExecutionException(
+                string.IsNullOrEmpty(r.Error) ?
+                "Unable to decode output from executing command, spinning down persistent client"
+                : r.Error);
         }
 
         internal static int ReadInt(byte[] buffer, int offset)

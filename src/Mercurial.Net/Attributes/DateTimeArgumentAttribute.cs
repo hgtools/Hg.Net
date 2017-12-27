@@ -81,7 +81,10 @@ namespace Mercurial.Attributes
             if (propertyValue is DateTime?)
                 propertyValue = ((DateTime?)propertyValue).Value;
             string result = string.Format(
-                CultureInfo.InvariantCulture, "\"{0}\"", ((DateTime)propertyValue).ToString(format, CultureInfo.InvariantCulture));
+                CultureInfo.InvariantCulture, 
+                //"\"{0}\"",
+                "{0}",
+                ((DateTime)propertyValue).ToString(format, CultureInfo.InvariantCulture));
 
             if (StringEx.IsNullOrWhiteSpace(NonNullOption))
                 return new[]

@@ -65,12 +65,15 @@ namespace Mercurial.Attributes
             if (!StringEx.IsNullOrWhiteSpace(NonNullOption))
                 return new[]
                 {
-                    NonNullOption, "\"" + result + "\""
+                    NonNullOption,
+                    result
+                    //"\"" + result + "\""
                 };
 
             return new[]
             {
-                "\"" + result + "\""
+                //"\"" + result + "\""
+                result
             };
         }
     }

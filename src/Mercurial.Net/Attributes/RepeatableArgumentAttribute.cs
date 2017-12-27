@@ -54,7 +54,10 @@ namespace Mercurial.Attributes
                 foreach (object element in list.Cast<object>().Where(element => element != null))
                 {
                     result.Add(Option);
-                    result.Add("\"" + element + "\"");
+                    result.Add(
+                        //"\"" + element + "\""
+                        element.ToString()
+                        );
                 }
                 return result.ToArray();
             }
