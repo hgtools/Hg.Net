@@ -83,6 +83,8 @@ namespace Mercurial.Tests
                 writer.WriteLine("main_encoding 	=  Windows-1251");
                 writer.WriteLine("terminal_encoding 	=  cp866");
             }
+
+            ClientExecutable.Configuration.Refresh(path);
         }
     }
 }

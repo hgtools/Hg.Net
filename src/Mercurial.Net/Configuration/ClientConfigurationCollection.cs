@@ -106,12 +106,16 @@ namespace Mercurial.Configuration
         /// Refreshes the client configuration information by calling the Mercurial command line
         /// client and asking it to report the current configuration.
         /// </summary>
-        public void Refresh()
+        public void Refresh(string cwd=null)
         {
             lock (_Configuration)
             {
                 _Configuration.Clear();
                 var command = new ShowConfigCommand();
+                if (cwd != null)
+                {
+                    command.AddArgument($"--cwd {cwd}");
+                }
                 NonPersistentClient.Execute(command);
 
                 foreach (ConfigurationEntry entry in command.Result.ToArray())

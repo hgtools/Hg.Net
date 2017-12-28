@@ -133,28 +133,28 @@ namespace Mercurial
 
             var _codec = ClientExecutable.GetMainEncoding();
 
-            int result = RunCommand(commandParts, outputs, null);
-            var r = new CommandResult(_codec.GetString(output.GetBuffer(), 0, (int)output.Length),
+            int resultCode = RunCommand(commandParts, outputs, null);
+            var result = new CommandResult(_codec.GetString(output.GetBuffer(), 0, (int)output.Length),
                                       _codec.GetString(error.GetBuffer(), 0, (int)error.Length),
-                                      result);
+                                      resultCode);
             
-            if (result == 0 || !string.IsNullOrEmpty(r.Output))
+            if (resultCode == 0 || !string.IsNullOrEmpty(result.Output))
             {
                 if (command.Observer != null)
                 {
-                    command.Observer.Output(r.Output);
-                    command.Observer.ErrorOutput(r.Error);
-                    command.Observer.Executed(command.Command, commandArguments, result, r.Output, r.Error);
+                    command.Observer.Output(result.Output);
+                    command.Observer.ErrorOutput(result.Error);
+                    command.Observer.Executed(command.Command, commandArguments, resultCode, result.Output, result.Error);
                 }
-                command.After(result, r.Output, r.Error);
+                command.After(resultCode, result.Output, result.Error);
                 return;
             }
 
             StopPersistentMercurialClient();
             throw new MercurialExecutionException(
-                string.IsNullOrEmpty(r.Error) ?
+                string.IsNullOrEmpty(result.Error) ?
                 "Unable to decode output from executing command, spinning down persistent client"
-                : r.Error);
+                : result.Error);
         }
 
         internal static int ReadInt(byte[] buffer, int offset)
