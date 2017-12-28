@@ -8,6 +8,7 @@ namespace Mercurial.Tests
     {
         [Test]
         [Category("Integration")]
+        [Ignore("Waiting for fix: https://github.com/vCipher/Hg.Net/issues/1")]
         public void Outgoing_CloneOfMasterWithExtraChanges_ReturnsTheExtraChangesets()
         {
             const string commitMessage = "commit message in clone";

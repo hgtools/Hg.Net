@@ -61,7 +61,7 @@ namespace Mercurial
             
             _ListFileName = Path.GetTempFileName();
 
-            var listFileEncoding = ClientExecutable.GetListfileEncoding();
+            var listFileEncoding = ClientExecutable.GetMainEncoding();
 
             File.WriteAllText(_ListFileName, string.Join(Environment.NewLine, arguments), listFileEncoding);
 

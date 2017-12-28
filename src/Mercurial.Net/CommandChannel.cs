@@ -26,14 +26,16 @@ namespace Mercurial
 	/// <summary>
 	/// A mercurial command channel
 	/// </summary>
+#pragma warning disable CS1591 // Отсутствует комментарий XML для открытого видимого типа или члена
 	public enum CommandChannel
 	{
-		Input,
-		Line,
+        Input,
+        Line,
 		Output,
 		Error,
 		Result,
 		Debug
 	}
+#pragma warning restore CS1591 // Отсутствует комментарий XML для открытого видимого типа или члена
 }
 

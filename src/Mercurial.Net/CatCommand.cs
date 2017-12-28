@@ -11,7 +11,7 @@ namespace Mercurial
     /// This class implements the "hg cat" command (<see href="http://www.selenic.com/mercurial/hg.1.html#cat"/>):
     /// Retrieve the current or given revision of files.
     /// </summary>
-    public sealed class CatCommand : IncludeExcludeCommandBase<CatCommand>, ICommandAwaredOfClient
+    public sealed class CatCommand : IncludeExcludeCommandBase<CatCommand>
     {
         /// <summary>
         /// This is the backing field for the <see cref="Files"/> property.
@@ -178,10 +178,6 @@ namespace Mercurial
                 return base.Arguments.Concat(_Files.GetArguments(!UseInPersistentClient));
             }
         }
-
-        /// <inheritdoc/>
-        [DefaultValueAttribute(false)]
-        public bool UseInPersistentClient { get; set; }
 
         /// <summary>
         /// Override this method to implement code that will execute after command

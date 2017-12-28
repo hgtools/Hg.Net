@@ -177,12 +177,7 @@ namespace Mercurial
                     ArgumentAttribute[] attributes = prop.GetCustomAttributes(typeof(ArgumentAttribute), true).Cast<ArgumentAttribute>().ToArray();
                     foreach (ArgumentAttribute attribute in attributes)
                     {
-                        bool addExtraQuotes = true;
-                        if (this is ICommandAwaredOfClient com)
-                        {
-                            addExtraQuotes = !com.UseInPersistentClient;
-                        }
-                        string[] values = attribute.GetOptions(prop.GetValue(this, null), addExtraQuotes);
+                        string[] values = attribute.GetOptions(prop.GetValue(this, null), !UseInPersistentClient);
                         if (values == null || values.Length == 0)
                             continue;
 

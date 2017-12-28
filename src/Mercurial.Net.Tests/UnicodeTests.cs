@@ -14,6 +14,7 @@ namespace Mercurial.Tests
             const string commitMessage = "Unicode:testжшеЖШЕ.txt";
 
             Repo.Init();
+            PrepareMercurialConfig(Repo.Path);
             WriteTextFileAndCommit(Repo, "testыыыы.txt", "dummy", commitMessage, true);
             var logEntry = Repo.Log().First();
             string logMessage = Repo.Log().First().CommitMessage;
@@ -28,6 +29,7 @@ namespace Mercurial.Tests
             const string commitMessage = "Unicode:testжшеЖШЕ.txt";
 
             Repo.Init();
+            PrepareMercurialConfig(Repo.Path);
             var branchName = "Одинокая ветка сирени";
             Repo.Branch(branchName);
             WriteTextFileAndCommit(Repo, "testыыыы.txt", "dummy", commitMessage, true);
@@ -43,6 +45,7 @@ namespace Mercurial.Tests
             const string fileName = "testжшеЖШЕ.txt";
 
             Repo.Init();
+            PrepareMercurialConfig(Repo.Path);
             WriteTextFileAndCommit(Repo, fileName, "dummy", "dummy", true);
             string logFileName = Repo.Log(
                 new LogCommand
@@ -58,6 +61,7 @@ namespace Mercurial.Tests
         public void Add_ExistingFileWithUnicodeCharacterInName_AddsItToTheRepository()
         {
             Repo.Init();
+            PrepareMercurialConfig(Repo.Path);
             const string filename = "testжшеЖШЕ.txt";
             File.WriteAllText(Path.Combine(Repo.Path, filename), "contents");
             Repo.Add(filename);
@@ -68,6 +72,17 @@ namespace Mercurial.Tests
                 {
                     new FileStatus(FileState.Added, filename),
                 });
+        }
+
+        private void PrepareMercurialConfig(string path)
+        {
+            Directory.CreateDirectory(path + @"\.hg");
+            using (var writer = File.CreateText(path + @"\.hg\hgrc"))
+            {
+                writer.WriteLine("[net]");
+                writer.WriteLine("main_encoding 	=  Windows-1251");
+                writer.WriteLine("terminal_encoding 	=  cp866");
+            }
         }
     }
 }

@@ -162,7 +162,7 @@ namespace Mercurial
                 buffer[index] = (byte)unencodedByte;
             }
 
-            var encoding = ClientExecutable.GetListfileEncoding();
+            var encoding = ClientExecutable.GetMainEncoding();
             return encoding.GetString(buffer);
         }
 

@@ -316,9 +316,9 @@ namespace Mercurial
         /// Retrieves encoding for Process streams from Mercurial config with default fallback value.
         /// </summary>
         /// <returns></returns>
-        public static Encoding GetListfileEncoding()
+        public static Encoding GetMainEncoding()
         {
-            var encName = Configuration.GetValue("net", "listfile_encoding");
+            var encName = Configuration.GetValue("net", "main_encoding");
             try
             {
                 return Encoding.GetEncoding(encName);

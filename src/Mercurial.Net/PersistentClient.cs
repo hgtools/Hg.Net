@@ -101,8 +101,6 @@ namespace Mercurial
             {
                 command.Command,
                  "--noninteractive",
-                 //"--encoding",
-                 //"cp1251",
             };
             arguments = arguments.Concat(command.Arguments.Where(a => !StringEx.IsNullOrWhiteSpace(a)));
             arguments = arguments.Concat(command.AdditionalArguments.Where(a => !StringEx.IsNullOrWhiteSpace(a)));
@@ -125,18 +123,6 @@ namespace Mercurial
                 commandArguments = string.Join(" ", commandParts.Skip(1).ToArray());
                 command.Observer.Executing(command.Command, commandArguments);
             }
-            /*
-            var str = commandBuffer.ToString();
-            byte[] buffer = ClientExecutable.GetListfileEncoding().GetBytes(str);
-            foreach (byte b in buffer)
-            {
-                _Process.StandardInput.BaseStream.WriteByte(b);
-                _Process.StandardInput.BaseStream.Flush();
-            }
-
-            //string standardOutput;
-            //string standardError;
-            //int exitCode;*/
 
             MemoryStream output = new MemoryStream();
             MemoryStream error = new MemoryStream();
@@ -145,7 +131,7 @@ namespace Mercurial
                 { CommandChannel.Error, error },
             };
 
-            var _codec = ClientExecutable.GetListfileEncoding();
+            var _codec = ClientExecutable.GetMainEncoding();
 
             int result = RunCommand(commandParts, outputs, null);
             var r = new CommandResult(_codec.GetString(output.GetBuffer(), 0, (int)output.Length),
@@ -186,7 +172,7 @@ namespace Mercurial
             if (null == command || 0 == command.Count)
                 throw new ArgumentException("Command must not be empty", "command");
 
-            var _codec = ClientExecutable.GetListfileEncoding();
+            var _codec = ClientExecutable.GetMainEncoding();
 
             byte[] commandBuffer = _codec.GetBytes("runcommand\n");
             byte[] argumentBuffer;
@@ -433,13 +419,13 @@ namespace Mercurial
             };
             psi.EnvironmentVariables.Add("LANGUAGE", "EN");
             psi.EnvironmentVariables.Remove("HGENCODING");
-            psi.EnvironmentVariables.Add("HGENCODING", ClientExecutable.GetListfileEncoding().WebName);
+            psi.EnvironmentVariables.Add("HGENCODING", ClientExecutable.GetMainEncoding().WebName);
 
-            Console.InputEncoding = ClientExecutable.GetListfileEncoding();
-            Console.OutputEncoding = ClientExecutable.GetListfileEncoding();
+            Console.InputEncoding = ClientExecutable.GetMainEncoding();
+            Console.OutputEncoding = ClientExecutable.GetMainEncoding();
 
-            psi.StandardOutputEncoding = ClientExecutable.GetListfileEncoding();
-            psi.StandardErrorEncoding = ClientExecutable.GetListfileEncoding();
+            psi.StandardOutputEncoding = ClientExecutable.GetMainEncoding();
+            psi.StandardErrorEncoding = ClientExecutable.GetMainEncoding();
 
             _Process = Process.Start(psi);
             DecodeInitialBlock();

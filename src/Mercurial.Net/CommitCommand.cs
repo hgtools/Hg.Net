@@ -15,7 +15,7 @@ namespace Mercurial
     /// This class implements the "hg commit" command (<see href="http://www.selenic.com/mercurial/hg.1.html#commit"/>):
     /// commit the specified files or all outstanding changes.
     /// </summary>
-    public sealed class CommitCommand : IncludeExcludeCommandBase<CommitCommand>, IMercurialCommand<RevSpec>, ICommandAwaredOfClient
+    public sealed class CommitCommand : IncludeExcludeCommandBase<CommitCommand>, IMercurialCommand<RevSpec>
     {
         /// <summary>
         /// This is the backing field for the <see cref="Paths"/> property.
@@ -162,10 +162,6 @@ namespace Mercurial
                 
             }
         }
-
-        /// <inheritdoc/>
-        [DefaultValueAttribute(false)]
-        public bool UseInPersistentClient { get; set; }
 
         /// <summary>
         /// Validates the command configuration. This method should throw the necessary
@@ -325,7 +321,7 @@ namespace Mercurial
         protected override void Prepare()
         {
             _MessageFilePath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString().Replace("-", string.Empty).ToLowerInvariant() + ".txt");
-            File.WriteAllText(_MessageFilePath, Message, ClientExecutable.GetListfileEncoding());
+            File.WriteAllText(_MessageFilePath, Message, ClientExecutable.GetMainEncoding());
         }
 
         /// <summary>

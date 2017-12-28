@@ -12,7 +12,7 @@ namespace Mercurial
     /// This class implements the "hg diff" command (<see href="http://www.selenic.com/mercurial/hg.1.html#diff"/>):
     /// diff repository (or selected files).
     /// </summary>
-    public sealed class DiffCommand : IncludeExcludeCommandBase<DiffCommand>, IMercurialCommand<string>, ICommandAwaredOfClient
+    public sealed class DiffCommand : IncludeExcludeCommandBase<DiffCommand>, IMercurialCommand<string>
     {
         /// <summary>
         /// This is the backing field for the <see cref="Names"/> property.
@@ -496,10 +496,6 @@ namespace Mercurial
                 return arguments;
             }
         }
-
-        /// <inheritdoc/>
-        [DefaultValueAttribute(false)]
-        public bool UseInPersistentClient { get; set; }
 
         /// <summary>
         /// Override this method to implement code that will execute after command

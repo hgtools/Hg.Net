@@ -19,10 +19,11 @@ namespace Mercurial.Tests
 
         [Test]
         [Category("Integration")]
+        [Ignore("Waiting for fix: https://github.com/vCipher/Hg.Net/issues/1")]
         public void Clone_ProducesCloneWithSameLog()
         {
             Repo.Init();
-            WriteTextFileAndCommit(Repo, "test1.txt", "dummy content", "dummy", true);
+            WriteTextFileAndCommit(Repo, "test1ûûû.txt", "dummy content", "dummyûûû", true);
 
             Repository cloneRepo = GetRepository();
 
@@ -32,6 +33,7 @@ namespace Mercurial.Tests
 
         [Test]
         [Category("Integration")]
+        [Ignore("Waiting for fix: https://github.com/vCipher/Hg.Net/issues/1")]
         public void Clone_UpdateToNullRevision_ProducesCloneWithoutFilesInWorkingFolder()
         {
             Repo.Init();
@@ -54,6 +56,7 @@ namespace Mercurial.Tests
 
         [Test]
         [Category("Integration")]
+        [Ignore("Waiting for fix: https://github.com/vCipher/Hg.Net/issues/1")]
         public void GetHashCodeOfChangeset_FromClone_ProducesSameHashCodeAsInOriginalRepository()
         {
             Repo.Init();

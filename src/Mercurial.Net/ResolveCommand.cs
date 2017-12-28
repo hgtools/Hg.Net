@@ -13,7 +13,7 @@ namespace Mercurial
     /// This class implements the "hg resolve" command (<see href="http://www.selenic.com/mercurial/hg.1.html#resolve"/>):
     /// Redo merges or set/view the merge status of files.
     /// </summary>
-    public sealed class ResolveCommand : IncludeExcludeCommandBase<ResolveCommand>, IMercurialCommand<IEnumerable<MergeConflict>>, ICommandAwaredOfClient
+    public sealed class ResolveCommand : IncludeExcludeCommandBase<ResolveCommand>, IMercurialCommand<IEnumerable<MergeConflict>>
     {
         /// <summary>
         /// This is the backing field for the <see cref="Files"/> property.
@@ -238,10 +238,6 @@ namespace Mercurial
                     yield return argument;
             }
         }
-
-        /// <inheritdoc/>
-        [DefaultValueAttribute(false)]
-        public bool UseInPersistentClient { get; set; }
 
         /// <summary>
         /// Gets the base arguments.

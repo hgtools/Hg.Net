@@ -162,8 +162,8 @@ namespace Mercurial
             foreach (var kvp in environmentVariables)
                 psi.EnvironmentVariables[kvp.Key] = kvp.Value;
             ClientExecutable.LazyInitialize();
-            psi.StandardErrorEncoding = ClientExecutable.GetListfileEncoding();
-            psi.StandardOutputEncoding = ClientExecutable.GetListfileEncoding();
+            psi.StandardErrorEncoding = ClientExecutable.GetMainEncoding();
+            psi.StandardOutputEncoding = ClientExecutable.GetMainEncoding();
 
             if (command.Observer != null)
                 command.Observer.Executing(command.Command, argumentsString);

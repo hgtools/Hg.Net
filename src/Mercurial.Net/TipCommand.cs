@@ -50,10 +50,6 @@ namespace Mercurial
             }
         }
 
-        /// <inheritdoc/>
-        [DefaultValueAttribute(false)]
-        public bool UseInPersistentClient { get; set; }
-
         #endregion
 
         /// <summary>
