@@ -32,6 +32,7 @@ namespace Mercurial
                 throw new ArgumentNullException("repositoryPath");
 
             _RepositoryPath = repositoryPath;
+            ClientExecutable.Configuration.Refresh(repositoryPath);
         }
 
         /// <summary>

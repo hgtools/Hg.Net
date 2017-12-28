@@ -51,6 +51,7 @@ namespace Mercurial
                 throw new NotSupportedException("The persistent client is not supported for the given repository or by the current Mercurial client");
 
             _RepositoryPath = repositoryPath;
+            ClientExecutable.Configuration.Refresh(repositoryPath);
             StartPersistentMercurialClient();
         }
 
