@@ -2,6 +2,7 @@ using System.Linq;
 using NUnit.Framework;
 using System.IO;
 using System.Text;
+using System;
 
 namespace Mercurial.Tests
 {
@@ -81,9 +82,10 @@ namespace Mercurial.Tests
             using (var writer = File.CreateText(path + @"\.hg\hgrc"))
             {
                 var encoding = Encoding.Default;
+                var terminalEncoding = Console.OutputEncoding;
                 writer.WriteLine("[net]");
                 writer.WriteLine($"main_encoding 	=  {encoding.WebName}");
-                writer.WriteLine("terminal_encoding 	=  cp866");
+                writer.WriteLine($"terminal_encoding 	=  {terminalEncoding.WebName}");
             }
 
             ClientExecutable.Configuration.Refresh(path);

@@ -325,7 +325,7 @@ namespace Mercurial
             }
             catch
             {
-                return Encoding.GetEncoding("Windows-1252");
+                return Encoding.Default;
             }
                 
         }
@@ -343,7 +343,7 @@ namespace Mercurial
             }
             catch
             {
-                return Encoding.GetEncoding("cp866");
+                return Console.OutputEncoding;
             }
 
         }
