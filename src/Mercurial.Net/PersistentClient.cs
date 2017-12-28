@@ -152,7 +152,7 @@ namespace Mercurial
                                       _codec.GetString(error.GetBuffer(), 0, (int)error.Length),
                                       result);
             
-            if (result == 0)
+            if (result == 0 || !string.IsNullOrEmpty(r.Output))
             {
                 if (command.Observer != null)
                 {
