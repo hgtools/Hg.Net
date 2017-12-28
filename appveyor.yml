@@ -1,6 +1,9 @@
 # Build script
 init:
   - git config --global core.autocrlf true
+  - ps: Set-WinSystemLocale ru-RU
+  - ps: Start-Sleep -s 5
+  - ps: Restart-Computer
 
 image: Visual Studio 2017
 
