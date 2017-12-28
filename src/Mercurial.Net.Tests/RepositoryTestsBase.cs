@@ -21,8 +21,8 @@ namespace Mercurial.Tests
             _Repositories.Add(repoPath);
             if (Environment.GetEnvironmentVariable("PERSISTENTCLIENT") == "1")
                 return new Repository(repoPath, new AutoSwitchingClientFactory());
-            return new Repository(repoPath, //new AutoSwitchingClientFactory());
-                new NonPersistentClientFactory());
+            return new Repository(repoPath, new AutoSwitchingClientFactory());
+                //new NonPersistentClientFactory());
         }
 
         protected string GetTempFileName()

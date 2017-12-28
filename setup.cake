@@ -12,6 +12,7 @@ BuildParameters.SetParameters(
     appVeyorAccountName: "vCipher",
     shouldRunCodecov: false,
     shouldRunDupFinder: false,
+    shouldRunInspectCode: false,
     solutionFilePath: "./src/Mercurial.Net.sln");
 
 BuildParameters.PrintParameters(Context);
