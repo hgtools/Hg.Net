@@ -15,7 +15,7 @@ namespace Mercurial
     /// This class implements the "hg commit" command (<see href="http://www.selenic.com/mercurial/hg.1.html#commit"/>):
     /// commit the specified files or all outstanding changes.
     /// </summary>
-    public sealed class CommitCommand : IncludeExcludeCommandBase<CommitCommand>, IMercurialCommand<RevSpec>
+    public sealed class CommitCommand : IncludeExcludeCommandBase<CommitCommand>, IMercurialCommand<RevSpec>, ICommandAwaredOfClient
     {
         /// <summary>
         /// This is the backing field for the <see cref="Paths"/> property.
@@ -143,13 +143,29 @@ namespace Mercurial
         {
             get
             {
-                return base.Arguments.Concat(
-                    new[]
-                    {
-                        "--message", Message,
-                    }).Concat(_Paths.GetArguments());
+                if (UseInPersistentClient)
+                {
+                    return base.Arguments.Concat(
+                        new[]
+                        {
+                            "--message", Message,
+                        }).Concat(_Paths.GetArguments(!UseInPersistentClient));
+                }
+                else
+                {
+                    return base.Arguments.Concat(
+                        new[]
+                        {
+                            "--logfile", string.Format(CultureInfo.InvariantCulture, "\"{0}\"", _MessageFilePath)
+                        }).Concat(_Paths.GetArguments(!UseInPersistentClient));
+                }
+                
             }
         }
+
+        /// <inheritdoc/>
+        [DefaultValueAttribute(false)]
+        public bool UseInPersistentClient { get; set; }
 
         /// <summary>
         /// Validates the command configuration. This method should throw the necessary

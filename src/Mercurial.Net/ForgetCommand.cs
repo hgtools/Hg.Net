@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 
 namespace Mercurial
@@ -9,7 +10,7 @@ namespace Mercurial
     /// This class implements the "hg forget" command (<see href="http://www.selenic.com/mercurial/hg.1.html#forget"/>):
     /// forget the specified files on the next commit.
     /// </summary>
-    public sealed class ForgetCommand : IncludeExcludeCommandBase<ForgetCommand>
+    public sealed class ForgetCommand : IncludeExcludeCommandBase<ForgetCommand>, ICommandAwaredOfClient
     {
         /// <summary>
         /// This is the backing field for the <see cref="Paths"/> property.
@@ -84,9 +85,13 @@ namespace Mercurial
         {
             get
             {
-                return base.Arguments.Concat(_Paths.GetArguments());
+                return base.Arguments.Concat(_Paths.GetArguments(!UseInPersistentClient));
             }
         }
+
+        /// <inheritdoc/>
+        [DefaultValueAttribute(false)]
+        public bool UseInPersistentClient { get; set; }
 
         /// <summary>
         /// Override this method to implement code that will execute after command

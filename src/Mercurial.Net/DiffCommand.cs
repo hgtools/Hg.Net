@@ -12,7 +12,7 @@ namespace Mercurial
     /// This class implements the "hg diff" command (<see href="http://www.selenic.com/mercurial/hg.1.html#diff"/>):
     /// diff repository (or selected files).
     /// </summary>
-    public sealed class DiffCommand : IncludeExcludeCommandBase<DiffCommand>, IMercurialCommand<string>
+    public sealed class DiffCommand : IncludeExcludeCommandBase<DiffCommand>, IMercurialCommand<string>, ICommandAwaredOfClient
     {
         /// <summary>
         /// This is the backing field for the <see cref="Names"/> property.
@@ -478,7 +478,7 @@ namespace Mercurial
         {
             get
             {
-                List<string> arguments = base.Arguments.Concat(_Names.GetArguments()).ToList();
+                List<string> arguments = base.Arguments.Concat(_Names.GetArguments(!UseInPersistentClient)).ToList();
 
                 if ((Ignore & DiffIgnores.WhiteSpace) != 0)
                     arguments.Add("--ignore-all-space");
@@ -496,6 +496,10 @@ namespace Mercurial
                 return arguments;
             }
         }
+
+        /// <inheritdoc/>
+        [DefaultValueAttribute(false)]
+        public bool UseInPersistentClient { get; set; }
 
         /// <summary>
         /// Override this method to implement code that will execute after command

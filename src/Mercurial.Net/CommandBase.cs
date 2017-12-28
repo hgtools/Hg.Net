@@ -155,6 +155,11 @@ namespace Mercurial
         }
 
         /// <summary>
+        /// Flag of client's type, which will be used to execute this command.
+        /// </summary>
+        bool UseInPersistentClient { get; set; }
+
+        /// <summary>
         /// Gets all the arguments to the <see cref="Command"/>, or an
         /// empty array if there are none.
         /// </summary>
@@ -177,7 +182,12 @@ namespace Mercurial
                     ArgumentAttribute[] attributes = prop.GetCustomAttributes(typeof(ArgumentAttribute), true).Cast<ArgumentAttribute>().ToArray();
                     foreach (ArgumentAttribute attribute in attributes)
                     {
-                        string[] values = attribute.GetOptions(prop.GetValue(this, null));
+                        bool addExtraQuotes = true;
+                        if (this is ICommandAwaredOfClient com)
+                        {
+                            addExtraQuotes = !com.UseInPersistentClient;
+                        }
+                        string[] values = attribute.GetOptions(prop.GetValue(this, null), addExtraQuotes);
                         if (values == null || values.Length == 0)
                             continue;
 

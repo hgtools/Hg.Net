@@ -11,7 +11,7 @@ namespace Mercurial
     /// This class implements the "hg remove" command (<see href="http://www.selenic.com/mercurial/hg.1.html#remove"/>):
     /// remove the specified files on the next commit.
     /// </summary>
-    public sealed class RemoveCommand : IncludeExcludeCommandBase<RemoveCommand>
+    public sealed class RemoveCommand : IncludeExcludeCommandBase<RemoveCommand>, ICommandAwaredOfClient
     {
         /// <summary>
         /// This is the backing field for the <see cref="Paths"/> property.
@@ -147,9 +147,13 @@ namespace Mercurial
         {
             get
             {
-                return base.Arguments.Concat(_Paths.GetArguments());
+                return base.Arguments.Concat(_Paths.GetArguments(!UseInPersistentClient));
             }
         }
+
+        /// <inheritdoc/>
+        [DefaultValueAttribute(false)]
+        public bool UseInPersistentClient { get; set; }
 
         /// <summary>
         /// Override this method to implement code that will execute after command

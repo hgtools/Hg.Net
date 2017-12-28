@@ -52,6 +52,7 @@ namespace Mercurial.Attributes
         /// <param name="propertyValue">
         /// The property value from the tagged property of the options class.
         /// </param>
+        /// <param name="addExtraQuotes"></param>
         /// <returns>
         /// A collection of options or arguments, or an empty array or <c>null</c>
         /// for no options for the specified property value.
@@ -60,7 +61,7 @@ namespace Mercurial.Attributes
         /// <see cref="DateTimeArgumentAttribute"/> applied to non-<see cref="DateTime"/> property.
         /// </exception>
         [SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily", Justification = "DateTime? is a value-type, can't do as the rule suggests")]
-        public override string[] GetOptions(object propertyValue)
+        public override string[] GetOptions(object propertyValue, bool addExtraQuotes)
         {
             if (propertyValue == null)
             {
@@ -82,8 +83,7 @@ namespace Mercurial.Attributes
                 propertyValue = ((DateTime?)propertyValue).Value;
             string result = string.Format(
                 CultureInfo.InvariantCulture, 
-                //"\"{0}\"",
-                "{0}",
+                addExtraQuotes ? "\"{0}\"" : "{0}",
                 ((DateTime)propertyValue).ToString(format, CultureInfo.InvariantCulture));
 
             if (StringEx.IsNullOrWhiteSpace(NonNullOption))

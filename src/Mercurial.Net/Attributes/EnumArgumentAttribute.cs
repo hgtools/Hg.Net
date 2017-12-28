@@ -111,11 +111,12 @@ namespace Mercurial.Attributes
         /// <param name="propertyValue">
         /// The property value from the tagged property of the command class.
         /// </param>
+        /// <param name="addExtraQuotes"></param>
         /// <returns>
         /// A collection of options or arguments, or an empty array or <c>null</c>
         /// for no options for the specified property value.
         /// </returns>
-        public override string[] GetOptions(object propertyValue)
+        public override string[] GetOptions(object propertyValue, bool addExtraQuotes)
         {
             int propertyValueAsNumber = Convert.ToInt32(propertyValue, CultureInfo.InvariantCulture);
             int valueAsNumber = Convert.ToInt32(_Value, CultureInfo.InvariantCulture);

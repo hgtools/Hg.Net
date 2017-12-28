@@ -116,6 +116,7 @@
     <Compile Include="Hooks\MercurialTagHook.cs" />
     <Compile Include="Hooks\MercurialUpdateHook.cs" />
     <Compile Include="IClient.cs" />
+    <Compile Include="IClientAwaredCommand.cs" />
     <Compile Include="IClientFactory.cs" />
     <Compile Include="IClientSwitcher.cs" />
     <Compile Include="ListFile.cs" />

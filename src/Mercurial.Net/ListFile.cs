@@ -46,7 +46,7 @@ namespace Mercurial
         /// <returns>
         /// A collection of arguments to pass to the command line client.
         /// </returns>
-        public string[] GetArguments()
+        public string[] GetArguments(bool useListFile)
         {
             var arguments =
                 (from argument in _Collection
@@ -56,9 +56,9 @@ namespace Mercurial
             if (arguments.Length == 0)
                 return arguments;
 
-            //if (ClientExecutable.CurrentVersion < new Version(1, 8))
+            if (ClientExecutable.CurrentVersion < new Version(1, 8) || !useListFile)
                 return arguments;
-            /*
+            
             _ListFileName = Path.GetTempFileName();
 
             var listFileEncoding = ClientExecutable.GetListfileEncoding();
@@ -66,7 +66,6 @@ namespace Mercurial
             File.WriteAllText(_ListFileName, string.Join(Environment.NewLine, arguments), listFileEncoding);
 
             return new[] { string.Format(CultureInfo.InvariantCulture, "\"listfile:{0}\"", _ListFileName) };
-            */
         }
 
         /// <summary>
