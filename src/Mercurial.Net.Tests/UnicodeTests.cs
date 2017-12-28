@@ -1,6 +1,7 @@
 using System.Linq;
 using NUnit.Framework;
 using System.IO;
+using System.Text;
 
 namespace Mercurial.Tests
 {
@@ -79,8 +80,9 @@ namespace Mercurial.Tests
             Directory.CreateDirectory(path + @"\.hg");
             using (var writer = File.CreateText(path + @"\.hg\hgrc"))
             {
+                var encoding = Encoding.Default;
                 writer.WriteLine("[net]");
-                writer.WriteLine("main_encoding 	=  Windows-1251");
+                writer.WriteLine($"main_encoding 	=  {encoding.WebName}");
                 writer.WriteLine("terminal_encoding 	=  cp866");
             }
 
