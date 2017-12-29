@@ -98,10 +98,11 @@ namespace Mercurial
         {
             get
             {
+                var formatStr = UseInPersistentClient ? "{0}" : "\"{0}\"";
                 return base.Arguments.Concat(
                     new[]
                     {
-                        "\"" + Source + "\"", "\"" + Destination + "\"",
+                        String.Format(formatStr, Source), String.Format(formatStr, Destination)
                     });
             }
         }

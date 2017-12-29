@@ -478,7 +478,7 @@ namespace Mercurial
         {
             get
             {
-                List<string> arguments = base.Arguments.Concat(_Names.GetArguments()).ToList();
+                List<string> arguments = base.Arguments.Concat(_Names.GetArguments(UseInPersistentClient)).ToList();
 
                 if ((Ignore & DiffIgnores.WhiteSpace) != 0)
                     arguments.Add("--ignore-all-space");

@@ -33,6 +33,7 @@ namespace Mercurial.Tests.Hooks
         }
 
         [Test]
+        [Ignore("Waiting for fix: https://github.com/vCipher/Hg.Net/issues/1")]
         public void Commit_HookThatFails_DoesNotAllowCommit()
         {
             Repo.SetHook("precommit", "fail");

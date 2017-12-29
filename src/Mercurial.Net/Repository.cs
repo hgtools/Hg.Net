@@ -260,7 +260,13 @@ namespace Mercurial
 
             var switcher = _ClientFactory as IClientSwitcher;
             if (switcher != null)
+            {
                 _Client = switcher.SwitchBeforeCommand(command, _Client);
+                if (command is ICommandAwaredOfClient com)
+                {
+                    com.UseInPersistentClient = true;
+                }
+            }
 
             Client.Execute(command);
 
@@ -287,7 +293,13 @@ namespace Mercurial
 
             var switcher = _ClientFactory as IClientSwitcher;
             if (switcher != null)
+            {
                 _Client = switcher.SwitchBeforeCommand(command, _Client);
+                if (command is ICommandAwaredOfClient com)
+                {
+                    com.UseInPersistentClient = true;
+                }
+            }
 
             Client.Execute(command);
 

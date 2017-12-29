@@ -35,24 +35,6 @@ namespace Mercurial.Tests
         }
 
         [Test]
-        [Ignore("Ignore while not working")]
-        [Category("Integration")]
-        public void Add_ExistingFileWithUnicodeCharacterInName_AddsItToTheRepository()
-        {
-            Repo.Init();
-            const string filename = "testжшеЖШЕ.txt";
-            File.WriteAllText(Path.Combine(Repo.Path, filename), "contents");
-            Repo.Add(filename);
-            FileStatus[] status = Repo.Status().ToArray();
-
-            CollectionAssert.AreEqual(
-                status, new[]
-                {
-                    new FileStatus(FileState.Added, filename),
-                });
-        }
-
-        [Test]
         [Category("Integration")]
         public void Add_FileDoesNotExist_ThrowsMercurialExecutionException()
         {

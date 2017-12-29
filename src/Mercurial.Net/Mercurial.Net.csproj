@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -71,7 +71,11 @@
     <Compile Include="CloneCommand.cs" />
     <Compile Include="CollectionExtensions.cs" />
     <Compile Include="CommandBase.cs" />
+    <Compile Include="CommandChannel.cs" />
+    <Compile Include="CommandException.cs" />
+    <Compile Include="CommandMessage.cs" />
     <Compile Include="CommandProcessor.cs" />
+    <Compile Include="CommandResult.cs" />
     <Compile Include="CommandServerOutputDecoder.cs" />
     <Compile Include="CommitCommand.cs" />
     <Compile Include="Attributes\DateTimeArgumentAttribute.cs" />
@@ -112,6 +116,7 @@
     <Compile Include="Hooks\MercurialTagHook.cs" />
     <Compile Include="Hooks\MercurialUpdateHook.cs" />
     <Compile Include="IClient.cs" />
+    <Compile Include="IClientAwaredCommand.cs" />
     <Compile Include="IClientFactory.cs" />
     <Compile Include="IClientSwitcher.cs" />
     <Compile Include="ListFile.cs" />

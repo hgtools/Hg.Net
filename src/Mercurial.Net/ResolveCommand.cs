@@ -234,7 +234,7 @@ namespace Mercurial
                 foreach (string argument in MercurialVersionBase.Current.MergeToolOption(MergeTool))
                     yield return argument;
 
-                foreach (string argument in _Files.GetArguments())
+                foreach (string argument in _Files.GetArguments(UseInPersistentClient))
                     yield return argument;
             }
         }

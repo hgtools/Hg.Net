@@ -14,6 +14,11 @@ BuildParameters.SetParameters(
     shouldRunDupFinder: false,
     solutionFilePath: "./src/Mercurial.Net.sln");
 
+
+Information("{0}", Encoding.Default.WebName);
+Information("{0}", Console.OutputEncoding.WebName);
+Information("{0}", Console.InputEncoding.WebName);
+Information("{0}", System.Environment.GetEnvironmentVariable("HGENCODING"));
 BuildParameters.PrintParameters(Context);
 
 ToolSettings.SetToolSettings(

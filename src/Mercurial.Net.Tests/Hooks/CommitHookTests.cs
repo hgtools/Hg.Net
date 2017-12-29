@@ -9,6 +9,7 @@ namespace Mercurial.Tests.Hooks
     public class CommitHookTests : SingleRepositoryTestsBase
     {
         [Test]
+        [Ignore("Waiting for fix: https://github.com/vCipher/Hg.Net/issues/1")]
         public void Commit_SingleChangeset_OutputsThatChangeset()
         {
             Repo.Init();

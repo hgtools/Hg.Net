@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 
 namespace Mercurial
@@ -84,7 +85,7 @@ namespace Mercurial
         {
             get
             {
-                return base.Arguments.Concat(_Paths.GetArguments());
+                return base.Arguments.Concat(_Paths.GetArguments(UseInPersistentClient));
             }
         }
 

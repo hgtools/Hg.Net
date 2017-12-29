@@ -11,7 +11,7 @@ namespace Mercurial
     /// This class implements the "hg add" command (<see href="http://www.selenic.com/mercurial/hg.1.html#add"/>):
     /// add the specified files on the next commit.
     /// </summary>
-    public sealed class AddCommand : IncludeExcludeCommandBase<AddCommand>
+    public sealed class AddCommand : IncludeExcludeCommandBase<AddCommand> 
     {
         /// <summary>
         /// This is the backing field for the <see cref="Paths"/> property.
@@ -122,7 +122,7 @@ namespace Mercurial
         {
             get
             {
-                return base.Arguments.Concat(_Files.GetArguments());
+                return base.Arguments.Concat(_Files.GetArguments(UseInPersistentClient));
             }
         }
 

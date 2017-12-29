@@ -80,5 +80,9 @@ namespace Mercurial
             get;
             private set;
         }
+
+        /// <inheritdoc/>
+        [DefaultValueAttribute(false)]
+        public new bool UseInPersistentClient { get; set; }
     }
 }

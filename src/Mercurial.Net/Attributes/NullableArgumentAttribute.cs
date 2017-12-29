@@ -40,11 +40,12 @@ namespace Mercurial.Attributes
         /// <param name="propertyValue">
         /// The property value from the tagged property of the options class.
         /// </param>
+        /// <param name="addExtraQuotes">Should parameters be enclosed in quotes(required for NonPersistentClient)</param>
         /// <returns>
         /// A collection of options or arguments, or an empty array or <c>null</c>
         /// for no options for the specified property value.
         /// </returns>
-        public override string[] GetOptions(object propertyValue)
+        public override string[] GetOptions(object propertyValue, bool addExtraQuotes)
         {
             string result;
             if (propertyValue == null)
@@ -65,12 +66,13 @@ namespace Mercurial.Attributes
             if (!StringEx.IsNullOrWhiteSpace(NonNullOption))
                 return new[]
                 {
-                    NonNullOption, "\"" + result + "\""
+                    NonNullOption,
+                    addExtraQuotes ? "\"" + result + "\"" : result
                 };
 
             return new[]
             {
-                "\"" + result + "\""
+                addExtraQuotes ? "\"" + result + "\"" : result
             };
         }
     }

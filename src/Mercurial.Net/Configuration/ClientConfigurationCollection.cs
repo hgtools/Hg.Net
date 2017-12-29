@@ -106,12 +106,17 @@ namespace Mercurial.Configuration
         /// Refreshes the client configuration information by calling the Mercurial command line
         /// client and asking it to report the current configuration.
         /// </summary>
-        public void Refresh()
+        /// <param name="currentWorkingDirectory">Path to repo passed through --cwd param to Mercurial</param>        
+        public void Refresh(string currentWorkingDirectory=null)
         {
             lock (_Configuration)
             {
                 _Configuration.Clear();
                 var command = new ShowConfigCommand();
+                if (currentWorkingDirectory != null)
+                {
+                    command.AddArgument($"--cwd {currentWorkingDirectory}");
+                }
                 NonPersistentClient.Execute(command);
 
                 foreach (ConfigurationEntry entry in command.Result.ToArray())

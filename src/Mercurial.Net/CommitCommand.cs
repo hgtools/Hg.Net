@@ -18,11 +18,6 @@ namespace Mercurial
     public sealed class CommitCommand : IncludeExcludeCommandBase<CommitCommand>, IMercurialCommand<RevSpec>
     {
         /// <summary>
-        /// This field is used to specify the encoding of the commit message.
-        /// </summary>
-        private static readonly Encoding _Encoding = Encoding.GetEncoding("Windows-1252");
-
-        /// <summary>
         /// This is the backing field for the <see cref="Paths"/> property.
         /// </summary>
         private readonly ListFile _Paths = new ListFile();
@@ -148,11 +143,23 @@ namespace Mercurial
         {
             get
             {
-                return base.Arguments.Concat(
-                    new[]
-                    {
-                        "--logfile", string.Format(CultureInfo.InvariantCulture, "\"{0}\"", _MessageFilePath),
-                    }).Concat(_Paths.GetArguments());
+                if (UseInPersistentClient)
+                {
+                    return base.Arguments.Concat(
+                        new[]
+                        {
+                            "--message", Message,
+                        }).Concat(_Paths.GetArguments(UseInPersistentClient));
+                }
+                else
+                {
+                    return base.Arguments.Concat(
+                        new[]
+                        {
+                            "--logfile", string.Format(CultureInfo.InvariantCulture, "\"{0}\"", _MessageFilePath)
+                        }).Concat(_Paths.GetArguments(UseInPersistentClient));
+                }
+                
             }
         }
 
@@ -314,7 +321,7 @@ namespace Mercurial
         protected override void Prepare()
         {
             _MessageFilePath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString().Replace("-", string.Empty).ToLowerInvariant() + ".txt");
-            File.WriteAllText(_MessageFilePath, Message, _Encoding);
+            File.WriteAllText(_MessageFilePath, Message, ClientExecutable.GetMainEncoding());
         }
 
         /// <summary>

@@ -16,7 +16,7 @@ namespace Mercurial
     /// The actual type descending from <see cref="CommandBase{T}"/>, used to generate type-correct
     /// methods in this base class.
     /// </typeparam>
-    public class CommandBase<T> : ICommand
+    public class CommandBase<T> : ICommand, ICommandAwaredOfClient
         where T : CommandBase<T>
     {
         /// <summary>
@@ -177,7 +177,7 @@ namespace Mercurial
                     ArgumentAttribute[] attributes = prop.GetCustomAttributes(typeof(ArgumentAttribute), true).Cast<ArgumentAttribute>().ToArray();
                     foreach (ArgumentAttribute attribute in attributes)
                     {
-                        string[] values = attribute.GetOptions(prop.GetValue(this, null));
+                        string[] values = attribute.GetOptions(prop.GetValue(this, null), !UseInPersistentClient);
                         if (values == null || values.Length == 0)
                             continue;
 
@@ -265,24 +265,30 @@ namespace Mercurial
             set;
         }
 
+        /// <inheritdoc/>
+        [DefaultValueAttribute(false)]
+        public bool UseInPersistentClient
+        {
+            get; set;
+        }
         #endregion
 
-        /// <summary>
-        /// Adds the value to the <see cref="AdditionalArguments"/> collection property and
-        /// returns this instance.
-        /// </summary>
-        /// <param name="value">
-        /// The value to add to the <see cref="AdditionalArguments"/> collection property.
-        /// </param>
-        /// <returns>
-        /// This instance.
-        /// </returns>
-        /// <remarks>
-        /// This method is part of the fluent interface.
-        /// </remarks>
-        /// <exception cref="ArgumentNullException">
-        /// <para><paramref name="value"/> is <c>null</c> or empty.</para>
-        /// </exception>
+            /// <summary>
+            /// Adds the value to the <see cref="AdditionalArguments"/> collection property and
+            /// returns this instance.
+            /// </summary>
+            /// <param name="value">
+            /// The value to add to the <see cref="AdditionalArguments"/> collection property.
+            /// </param>
+            /// <returns>
+            /// This instance.
+            /// </returns>
+            /// <remarks>
+            /// This method is part of the fluent interface.
+            /// </remarks>
+            /// <exception cref="ArgumentNullException">
+            /// <para><paramref name="value"/> is <c>null</c> or empty.</para>
+            /// </exception>
         public T WithAdditionalArgument(string value)
         {
             if (StringEx.IsNullOrWhiteSpace(value))

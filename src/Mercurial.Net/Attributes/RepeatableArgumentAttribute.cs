@@ -41,11 +41,12 @@ namespace Mercurial.Attributes
         /// <param name="propertyValue">
         /// The property value from the tagged property of the options class.
         /// </param>
+        /// <param name="addExtraQuotes">Should parameters be enclosed in quotes(required for NonPersistentClient)</param>
         /// <returns>
         /// A collection of options or arguments, or an empty array or <c>null</c>
         /// for no options for the specified property value.
         /// </returns>
-        public override string[] GetOptions(object propertyValue)
+        public override string[] GetOptions(object propertyValue, bool addExtraQuotes)
         {
             var list = propertyValue as IList;
             if (list != null)
@@ -54,7 +55,9 @@ namespace Mercurial.Attributes
                 foreach (object element in list.Cast<object>().Where(element => element != null))
                 {
                     result.Add(Option);
-                    result.Add("\"" + element + "\"");
+                    result.Add(
+                        addExtraQuotes ? "\"" + element + "\"" : element.ToString()
+                        );
                 }
                 return result.ToArray();
             }

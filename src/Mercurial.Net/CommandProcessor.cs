@@ -16,11 +16,6 @@ namespace Mercurial
     public static class CommandProcessor
     {
         /// <summary>
-        /// This field is used to specify the encoding of input/output streams for processes.
-        /// </summary>
-        private static readonly Encoding _Encoding = Encoding.GetEncoding("Windows-1252");
-
-        /// <summary>
         /// Executes the given executable to process the given command asynchronously.
         /// </summary>
         /// <param name="workingDirectory">
@@ -166,8 +161,9 @@ namespace Mercurial
             };
             foreach (var kvp in environmentVariables)
                 psi.EnvironmentVariables[kvp.Key] = kvp.Value;
-            psi.StandardErrorEncoding = _Encoding;
-            psi.StandardOutputEncoding = _Encoding;
+            ClientExecutable.LazyInitialize();
+            psi.StandardErrorEncoding = ClientExecutable.GetMainEncoding();
+            psi.StandardOutputEncoding = ClientExecutable.GetMainEncoding();
 
             if (command.Observer != null)
                 command.Observer.Executing(command.Command, argumentsString);

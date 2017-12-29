@@ -251,7 +251,7 @@ namespace Mercurial
                 return base.Arguments.Concat(
                     new[]
                     {
-                        "\"" + Source + "\"", ".",
+                        UseInPersistentClient ? Source : $"\"{Source}\"", ".",
                     });
             }
         }
