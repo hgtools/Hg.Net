@@ -8,6 +8,9 @@ image: Visual Studio 2017
 build_script:
   - ps: .\build.ps1 -Target AppVeyor -Verbosity Diagnostic
 
+environment:
+  PERSISTENTCLIENT: 1
+
 # Tests
 test: off
 
