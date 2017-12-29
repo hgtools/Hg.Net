@@ -3,21 +3,43 @@ using NUnit.Framework;
 using System.IO;
 using System.Text;
 using System;
+using System.Collections.Generic;
 
 namespace Mercurial.Tests
 {
     [TestFixture]
     public class UnicodeTests : SingleRepositoryTestsBase
     {
-        [Test]
-        [Category("Integration")]
-        public void Commit_WithUnicodeCharactersInCommitMessage_ProducesLogMessageWithTheSameText()
+        private static IEnumerable<string> UnicodeFilenames
         {
-            const string commitMessage = "Unicode:testжшеЖШЕ.txt";
+            get
+            {
+                if (Encoding.Default == Encoding.GetEncoding("Windows-1251"))
+                {
+                    yield return "testжшеЖШЕ.txt";
+                }
+            }
+        }
 
+        private static IEnumerable<string> UnicodeCommitMessages
+        {
+            get
+            {
+                if (Encoding.Default == Encoding.GetEncoding("Windows-1251"))
+                {
+                    yield return "Комментарий на русском языке";
+                }
+            }
+        }
+
+        [Test]
+        [TestCaseSource(nameof(UnicodeCommitMessages))]
+        [Category("Integration")]
+        public void Commit_WithUnicodeCharactersInCommitMessage_ProducesLogMessageWithTheSameText(string commitMessage)
+        {
             Repo.Init();
             PrepareMercurialConfig(Repo.Path);
-            WriteTextFileAndCommit(Repo, "testыыыы.txt", "dummy", commitMessage, true);
+            WriteTextFileAndCommit(Repo, "test.txt", "dummy", commitMessage, true);
             var logEntry = Repo.Log().First();
             string logMessage = Repo.Log().First().CommitMessage;
 
@@ -25,30 +47,27 @@ namespace Mercurial.Tests
         }
 
         [Test]
+        [TestCaseSource(nameof(UnicodeCommitMessages))]
         [Category("Integration")]
-        public void Branch_WithUnicodeCharactersInCommitMessage_ProducesLogMessageWithTheSameText()
+        public void Branch_WithUnicodeCharactersInCommitMessage_ProducesLogMessageWithTheSameText(string branchName)
         {
-            const string commitMessage = "Unicode:testжшеЖШЕ.txt";
-
             Repo.Init();
             PrepareMercurialConfig(Repo.Path);
-            var branchName = "Одинокая ветка сирени";
             Repo.Branch(branchName);
-            WriteTextFileAndCommit(Repo, "testыыыы.txt", "dummy", commitMessage, true);
+            WriteTextFileAndCommit(Repo, "test.txt", "dummy", branchName, true);
             string branchLog = Repo.Log().First().Branch;
 
             Assert.That(branchLog, Is.EqualTo(branchName));
         }
 
         [Test]
+        [TestCaseSource(nameof(UnicodeFilenames))]
         [Category("Integration")]
-        public void Commit_WithUnicodeCharactersInFileName_ProducesLogMessageWithTheSameFileName()
+        public void Commit_WithUnicodeCharactersInFileName_ProducesLogMessageWithTheSameFileName(string filename)
         {
-            const string fileName = "testжшеЖШЕ.txt";
-
             Repo.Init();
             PrepareMercurialConfig(Repo.Path);
-            WriteTextFileAndCommit(Repo, fileName, "dummy", "dummy", true);
+            WriteTextFileAndCommit(Repo, filename, "dummy", "dummy", true);
             string logFileName = Repo.Log(
                 new LogCommand
                 {
@@ -59,12 +78,12 @@ namespace Mercurial.Tests
         }
 
         [Test]
+        [TestCaseSource(nameof(UnicodeFilenames))]
         [Category("Integration")]
-        public void Add_ExistingFileWithUnicodeCharacterInName_AddsItToTheRepository()
+        public void Add_ExistingFileWithUnicodeCharacterInName_AddsItToTheRepository(string filename)
         {
             Repo.Init();
             PrepareMercurialConfig(Repo.Path);
-            const string filename = "testжшеЖШЕ.txt";
             File.WriteAllText(Path.Combine(Repo.Path, filename), "contents");
             Repo.Add(filename);
             FileStatus[] status = Repo.Status().ToArray();
