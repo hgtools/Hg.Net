@@ -319,6 +319,10 @@ namespace Mercurial
         public static Encoding GetMainEncoding()
         {
             var encName = Configuration.GetValue("net", "main_encoding");
+
+            if (string.IsNullOrEmpty(encName))
+                return Encoding.Default;
+
             try
             {
                 return Encoding.GetEncoding(encName);
@@ -337,6 +341,10 @@ namespace Mercurial
         public static Encoding GetTerminalEncoding()
         {
             var encName = Configuration.GetValue("net", "terminal_encoding");
+
+            if (string.IsNullOrEmpty(encName))
+                return Console.OutputEncoding;
+
             try
             {
                 return Encoding.GetEncoding(encName);
