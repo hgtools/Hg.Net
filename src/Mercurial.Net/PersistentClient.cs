@@ -451,14 +451,12 @@ namespace Mercurial
         /// </summary>
         private void StopPersistentMercurialClient()
         {
-            if (_Process != null)
-            {
-                _Process.StandardInput.Write("dummycommandforceservertoquit\n");
-                _Process.StandardInput.Close();
-
-                _Process.WaitForExit();
-                _Process = null;
-            }
+            if (_Process == null)
+                return;
+            
+            _Process.StandardInput.Close();
+            _Process.WaitForExit();
+            _Process = null;
         }
     }
 }
