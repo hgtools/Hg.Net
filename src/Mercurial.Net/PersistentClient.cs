@@ -453,10 +453,21 @@ namespace Mercurial
         {
             if (_Process == null)
                 return;
+
+            try
+            {
+                _Process.StandardInput.Close();
+                _Process.WaitForExit();
+            }
+            catch(ObjectDisposedException)
+            {
+
+            }
+            finally
+            {
+                _Process = null;
+            }
             
-            _Process.StandardInput.Close();
-            _Process.WaitForExit();
-            _Process = null;
         }
     }
 }
