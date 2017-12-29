@@ -149,7 +149,7 @@ namespace Mercurial
                         new[]
                         {
                             "--message", Message,
-                        }).Concat(_Paths.GetArguments(!UseInPersistentClient));
+                        }).Concat(_Paths.GetArguments(UseInPersistentClient));
                 }
                 else
                 {
@@ -157,7 +157,7 @@ namespace Mercurial
                         new[]
                         {
                             "--logfile", string.Format(CultureInfo.InvariantCulture, "\"{0}\"", _MessageFilePath)
-                        }).Concat(_Paths.GetArguments(!UseInPersistentClient));
+                        }).Concat(_Paths.GetArguments(UseInPersistentClient));
                 }
                 
             }

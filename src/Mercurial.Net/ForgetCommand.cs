@@ -85,7 +85,7 @@ namespace Mercurial
         {
             get
             {
-                return base.Arguments.Concat(_Paths.GetArguments(!UseInPersistentClient));
+                return base.Arguments.Concat(_Paths.GetArguments(UseInPersistentClient));
             }
         }
 

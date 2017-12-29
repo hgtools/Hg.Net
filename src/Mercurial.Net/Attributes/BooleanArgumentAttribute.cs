@@ -66,7 +66,7 @@ namespace Mercurial.Attributes
         /// <param name="propertyValue">
         /// The property value from the tagged property of the options class.
         /// </param>
-        /// <param name="addExtraQuotes"></param>
+        /// <param name="addExtraQuotes">Should parameters be enclosed in quotes(required for NonPersistentClient)</param>
         /// <returns>
         /// A collection of options or arguments, or an empty array or <c>null</c>
         /// for no options for the specified property value.

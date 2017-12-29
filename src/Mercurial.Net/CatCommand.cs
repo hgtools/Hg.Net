@@ -175,7 +175,7 @@ namespace Mercurial
         {
             get
             {
-                return base.Arguments.Concat(_Files.GetArguments(!UseInPersistentClient));
+                return base.Arguments.Concat(_Files.GetArguments(UseInPersistentClient));
             }
         }
 

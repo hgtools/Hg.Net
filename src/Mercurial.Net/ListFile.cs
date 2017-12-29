@@ -46,7 +46,7 @@ namespace Mercurial
         /// <returns>
         /// A collection of arguments to pass to the command line client.
         /// </returns>
-        public string[] GetArguments(bool useListFile)
+        public string[] GetArguments(bool useInPersistentClient)
         {
             var arguments =
                 (from argument in _Collection
@@ -56,7 +56,7 @@ namespace Mercurial
             if (arguments.Length == 0)
                 return arguments;
 
-            if (ClientExecutable.CurrentVersion < new Version(1, 8) || !useListFile)
+            if (ClientExecutable.CurrentVersion < new Version(1, 8) || useInPersistentClient)
                 return arguments;
             
             _ListFileName = Path.GetTempFileName();

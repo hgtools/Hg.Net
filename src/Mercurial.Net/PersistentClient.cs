@@ -198,52 +198,57 @@ namespace Mercurial
                 _Process.StandardInput.BaseStream.Write(argumentBuffer, 0, argumentBuffer.Length);
                 _Process.StandardInput.BaseStream.Flush();
 
-                try
-                {
-                    while (true)
-                    {
-                        CommandMessage message = ReadMessage();
-                        if (CommandChannel.Result == message.Channel)
-                            return ReadInt(message.Buffer, 0);
+                return ReadCommandOutputs(command, outputs, inputs);
+            }// lock _Process
+        }
 
-                        if (inputs != null && inputs.ContainsKey(message.Channel))
+        private int ReadCommandOutputs(IList<string> command, IDictionary<CommandChannel, Stream> outputs, IDictionary<CommandChannel, Func<uint, byte[]>> inputs)
+        {
+            try
+            {
+                while (true)
+                {
+                    CommandMessage message = ReadMessage();
+                    if (CommandChannel.Result == message.Channel)
+                        return ReadInt(message.Buffer, 0);
+
+                    if (inputs != null && inputs.ContainsKey(message.Channel))
+                    {
+                        byte[] sendBuffer = inputs[message.Channel](ReadUint(message.Buffer, 0));
+                        if (null == sendBuffer || 0 == sendBuffer.LongLength)
                         {
-                            byte[] sendBuffer = inputs[message.Channel](ReadUint(message.Buffer, 0));
-                            if (null == sendBuffer || 0 == sendBuffer.LongLength)
-                            {
-                            }
-                            else
-                            {
-                            }
                         }
-                        if (outputs != null && outputs.ContainsKey(message.Channel))
+                        else
                         {
-                            if (message.Buffer.Length > int.MaxValue)
-                            {
-                                // .NET hates uints
-                                int firstPart = message.Buffer.Length / 2;
-                                int secondPart = message.Buffer.Length - firstPart;
-                                outputs[message.Channel].Write(message.Buffer, 0, firstPart);
-                                outputs[message.Channel].Write(message.Buffer, firstPart, secondPart);
-                            }
-                            else
-                            {
-                                outputs[message.Channel].Write(message.Buffer, 0, message.Buffer.Length);
-                            }
+                        }
+                    }
+                    if (outputs != null && outputs.ContainsKey(message.Channel))
+                    {
+                        if (message.Buffer.Length > int.MaxValue)
+                        {
+                            // .NET hates uints
+                            int firstPart = message.Buffer.Length / 2;
+                            int secondPart = message.Buffer.Length - firstPart;
+                            outputs[message.Channel].Write(message.Buffer, 0, firstPart);
+                            outputs[message.Channel].Write(message.Buffer, firstPart, secondPart);
+                        }
+                        else
+                        {
+                            outputs[message.Channel].Write(message.Buffer, 0, message.Buffer.Length);
                         }
                     }
                 }
-                catch (Exception ex)
-                {
-                    //					Console.WriteLine (_Process.StandardOutput.ReadToEnd ());
-                    //					Console.WriteLine (_Process.StandardError.ReadToEnd ());
-                    Console.WriteLine(string.Join(" ", command.ToArray()));
-                    Console.WriteLine(ex);
-                    _Process.StandardOutput.BaseStream.Flush();
-                    _Process.StandardError.BaseStream.Flush();
-                    throw;
-                }
-            }// lock _Process
+            }
+            catch (Exception ex)
+            {
+                //					Console.WriteLine (_Process.StandardOutput.ReadToEnd ());
+                //					Console.WriteLine (_Process.StandardError.ReadToEnd ());
+                Console.WriteLine(string.Join(" ", command.ToArray()));
+                Console.WriteLine(ex);
+                _Process.StandardOutput.BaseStream.Flush();
+                _Process.StandardError.BaseStream.Flush();
+                throw;
+            }
         }
 
         internal static uint ReadUint(byte[] buffer, int offset)
