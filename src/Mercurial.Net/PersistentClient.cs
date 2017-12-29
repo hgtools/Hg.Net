@@ -427,9 +427,6 @@ namespace Mercurial
             psi.EnvironmentVariables.Remove("HGENCODING");
             psi.EnvironmentVariables.Add("HGENCODING", ClientExecutable.GetMainEncoding().WebName);
 
-            Console.InputEncoding = ClientExecutable.GetMainEncoding();
-            Console.OutputEncoding = ClientExecutable.GetMainEncoding();
-
             psi.StandardOutputEncoding = ClientExecutable.GetMainEncoding();
             psi.StandardErrorEncoding = ClientExecutable.GetMainEncoding();
 
