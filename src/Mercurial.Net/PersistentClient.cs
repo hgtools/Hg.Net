@@ -461,7 +461,7 @@ namespace Mercurial
             }
             catch(ObjectDisposedException)
             {
-
+                Debug.WriteLine("Prevented attempt to close already disposed StandardInput");
             }
             finally
             {
