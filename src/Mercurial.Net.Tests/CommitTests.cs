@@ -204,14 +204,14 @@ namespace Mercurial.Tests
         {
             Repo.Init();
             File.WriteAllText(Path.Combine(Repo.Path, "test1.txt"), "dummy content");
-            var timestamp = new DateTime(2010, 1, 17, 18, 23, 59);
+            var timestamp = new DateTime(2010, 1, 17, 18, 23, 59, DateTimeKind.Utc);
             Repo.Commit(
                 "dummy", new CommitCommand
                 {
                     AddRemove = true,
                     OverrideTimestamp = timestamp,
                 });
-            Assert.That(Repo.Log().First().Timestamp, Is.EqualTo(timestamp));
+            Assert.That(Repo.Log().First().Timestamp.ToUniversalTime(), Is.EqualTo(timestamp));
         }
 
         [Test]
