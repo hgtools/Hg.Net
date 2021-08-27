@@ -238,7 +238,7 @@ namespace Mercurial
                 {
                     '\n', '\r'
                 }, StringSplitOptions.RemoveEmptyEntries).First();
-            var re = new Regex(@"\(version\s+(?<version>[0-9.]+)(\+\d+-[a-f0-9]+)?\)", RegexOptions.IgnoreCase);
+            var re = new Regex(@"\(version\s+(?<version>[0-9.]+)(?:(?:\+\d+-[a-f0-9]+)|(?:rc\d+))?\)", RegexOptions.IgnoreCase);
             Match ma = re.Match(firstLine);
             if (!ma.Success)
                 throw new InvalidOperationException(
