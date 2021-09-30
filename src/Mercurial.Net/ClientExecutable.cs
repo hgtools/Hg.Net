@@ -325,7 +325,7 @@ namespace Mercurial
 
             try
             {
-                return Encoding.GetEncoding(encName);
+                return GetEncoding(encName);
             }
             catch
             {
@@ -347,13 +347,35 @@ namespace Mercurial
 
             try
             {
-                return Encoding.GetEncoding(encName);
+                return GetEncoding(encName);
             }
             catch
             {
                 return Console.OutputEncoding;
             }
 
+        }
+
+        /// <summary>
+        /// Returns an encoding based on the name.  Specifically for the
+        /// case of "utf-8", it returns a UTF-8 encoding without the BOM.
+        /// </summary>
+        private static Encoding GetEncoding(string encName)
+        {
+            // By retrieving the requested encoding first we can compare
+            // against the well-defined web name "utf-8" and not worry
+            // about how the encoding providers resolved the string in
+            // encName.
+            var encoding = Encoding.GetEncoding(encName);
+            if (encoding.WebName == "utf-8")
+            {
+                // Return UTF-8 encoding without the BOM.
+                return new UTF8Encoding(false, true);
+            }
+            else
+            {
+                return encoding;
+            }
         }
 
         /// <summary>
