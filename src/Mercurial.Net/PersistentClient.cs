@@ -108,16 +108,6 @@ namespace Mercurial
 
             var commandParts = arguments.ToArray();
 
-            string commandEncoded = string.Join("\0", commandParts.Select(p => p.Trim('"')).ToArray());
-            int length = commandEncoded.Length;
-            var commandBuffer = new StringBuilder();
-            commandBuffer.Append("runcommand\n");
-            commandBuffer.Append((char)((length >> 24) & 0xff));
-            commandBuffer.Append((char)((length >> 16) & 0xff));
-            commandBuffer.Append((char)((length >> 8) & 0xff));
-            commandBuffer.Append((char)(length & 0xff));
-            commandBuffer.Append(commandEncoded);
-
             string commandArguments = null;
             if (command.Observer != null)
             {
@@ -139,23 +129,13 @@ namespace Mercurial
                                       _codec.GetString(error.GetBuffer(), 0, (int)error.Length),
                                       resultCode);
             
-            if (resultCode == 0 || !string.IsNullOrEmpty(result.Output))
+            if (command.Observer != null)
             {
-                if (command.Observer != null)
-                {
-                    command.Observer.Output(result.Output);
-                    command.Observer.ErrorOutput(result.Error);
-                    command.Observer.Executed(command.Command, commandArguments, resultCode, result.Output, result.Error);
-                }
-                command.After(resultCode, result.Output, result.Error);
-                return;
+                command.Observer.Output(result.Output);
+                command.Observer.ErrorOutput(result.Error);
+                command.Observer.Executed(command.Command, commandArguments, resultCode, result.Output, result.Error);
             }
-
-            StopPersistentMercurialClient();
-            throw new MercurialExecutionException(
-                string.IsNullOrEmpty(result.Error) ?
-                "Unable to decode output from executing command, spinning down persistent client"
-                : result.Error);
+            command.After(resultCode, result.Output, result.Error);
         }
 
         internal static int ReadInt(byte[] buffer, int offset)
@@ -179,7 +159,8 @@ namespace Mercurial
             byte[] argumentBuffer;
 
             argumentBuffer = command.Aggregate(new List<byte>(), (bytes, arg) => {
-                bytes.AddRange(_codec.GetBytes(arg));
+                // Trim surrounding double quotes for persistent client
+                bytes.AddRange(_codec.GetBytes(arg.Trim('"')));
                 bytes.Add(0);
                 return bytes;
             },
@@ -392,10 +373,6 @@ namespace Mercurial
                 throw new ArgumentNullException("repositoryPath");
 
             if (!Directory.Exists(repositoryPath))
-                return false;
-
-            // TODO: Determine if we need to check if the .hg folder is an actual repository
-            if (!Directory.Exists(Path.Combine(repositoryPath, ".hg")))
                 return false;
 
             if (ClientExecutable.CurrentVersion < new Version(1, 9, 0, 0))
